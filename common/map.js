@@ -15,12 +15,13 @@ function mapBenchmark(benchmark) {
     return {
         name: benchmark.name,
         ops: formatNumber(benchmark.hz.toFixed(benchmark.hz < 100 ? 2 : 0)),
+        opsRaw: benchmark.hz.toFixed(benchmark.hz < 100 ? 2 : 0),
         samples: benchmark.stats.sample.length
     };
 }
 
 function formatNumber(number) {
-    number = String(number).split('.')
+    number = String(number).split('.');
     return number[0].replace(/(?=(?:\d{3})+$)(?!\b)/g, ',')
         + (number[1] ? '.' + number[1] : '')
 }

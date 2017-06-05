@@ -35,6 +35,7 @@ function exec() {
     const uppercaseSchema = stringSchema.uppercase();
     const trimSchema = stringSchema.trim();
     const truncateSchema = stringSchema.truncate();
+
     return new Promise((resolve) => {
         suite.add({
             name: 'validate-schema#base',
