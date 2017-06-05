@@ -32,6 +32,7 @@ runScripts(fs.readdirp(path.join(__dirname, 'benchmarks')))
         Object.keys(results).forEach((key) => {
 
             results[key].sort((lhs, rhs) => {
+
                 testMaxLength = Math.max(lhs.name.length, rhs.name.length, testMaxLength);
                 opsMaxLength = Math.max(lhs.ops.length, rhs.ops.length, opsMaxLength);
                 if (lhs.opsRaw < rhs.opsRaw) {

@@ -15,7 +15,7 @@ function mapBenchmark(benchmark) {
     return {
         name: benchmark.name,
         ops: formatNumber(benchmark.hz.toFixed(benchmark.hz < 100 ? 2 : 0)),
-        opsRaw: benchmark.hz.toFixed(benchmark.hz < 100 ? 2 : 0),
+        opsRaw: benchmark.hz,
         samples: benchmark.stats.sample.length
     };
 }

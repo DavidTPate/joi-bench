@@ -11,14 +11,20 @@ for (let i = 32, il = 127; i < il; i++) {
 }
 
 const testString = String.fromCharCode.apply(null, [].concat(charCodes, charCodes));
+const testAlphaNumString = testString.replace(/[^a-zA-Z0-9]/g, '');
+const testAlphaString = testAlphaNumString.replace(/[^a-zA-Z]/g, '');
+const testLowercaseAlphaString = testAlphaString.replace(/[^a-z]/g, '');
+const testUppercaseAlphaString = testAlphaString.replace(/[^A-Z]/g, '');
+const testNumString = testAlphaNumString.replace(/[^0-9]/g, '');
+
 
 function exec() {
     const stringSchema = Joi.string();
     const insensitiveSchema = stringSchema.insensitive();
     const creditCardSchema = stringSchema.creditCard();
-    const regexSchema = stringSchema.regex(/./);
-    const regexNameArgSchema = stringSchema.regex(/./, 'some-cool-regex');
-    const regexInvertSchema = stringSchema.regex(/./, {
+    const regexSchema = stringSchema.regex(/[a-z]+/);
+    const regexNameArgSchema = stringSchema.regex(/[a-z]+/, 'pattern-name');
+    const regexInvertSchema = stringSchema.regex(/[a-z]+/, {
         invert: true
     });
     const alphanumSchema = stringSchema.alphanum();
@@ -34,7 +40,8 @@ function exec() {
     const lowercaseSchema = stringSchema.lowercase();
     const uppercaseSchema = stringSchema.uppercase();
     const trimSchema = stringSchema.trim();
-    const truncateSchema = stringSchema.truncate();
+    const replaceSchema = stringSchema.replace(/\s+/, '');
+    const truncateSchema = stringSchema.truncate().max(25);
 
     return new Promise((resolve) => {
         suite.add({
@@ -50,92 +57,107 @@ function exec() {
         }).add({
             name: 'validate-schema#creditCard',
             fn: function () {
-                creditCardSchema.validate(testString);
+                creditCardSchema.validate('378734493671000');
             }
         }).add({
             name: 'validate-schema#regex',
             fn: function () {
-                regexSchema.validate(testString);
+                regexSchema.validate(testAlphaString);
             }
         }).add({
             name: 'validate-schema#regex-name-argument',
             fn: function () {
-                regexNameArgSchema.validate(testString);
+                regexNameArgSchema.validate(testAlphaString);
             }
         }).add({
             name: 'validate-schema#regex-invert',
             fn: function () {
-                regexInvertSchema.validate(testString);
+                regexInvertSchema.validate(testNumString);
             }
         }).add({
             name: 'validate-schema#alphanum',
             fn: function () {
-                alphanumSchema.validate(testString);
+                alphanumSchema.validate(testAlphaNumString);
             }
         }).add({
             name: 'validate-schema#token',
             fn: function () {
-                tokenSchema.validate(testString);
+                tokenSchema.validate('w0rld_of_w4lm4rtl4bs');
             }
         }).add({
             name: 'validate-schema#email',
             fn: function () {
-                emailSchema.validate(testString);
+                emailSchema.validate('joe@example.com');
             }
         }).add({
-            name: 'validate-schema#ip',
+            name: 'validate-schema#ipv4',
             fn: function () {
-                ipSchema.validate(testString);
+                ipSchema.validate('0.0.0.0/32');
+            }
+        }).add({
+            name: 'validate-schema#ipv6',
+            fn: function () {
+                ipSchema.validate('2001:db8::7/32');
+            }
+        }).add({
+            name: 'validate-schema#ipvfuture',
+            fn: function () {
+                ipSchema.validate('v1.09azAZ-._~!$&\'()*+,;=:/32');
             }
         }).add({
             name: 'validate-schema#uri',
             fn: function () {
-                uriSchema.validate(testString);
+                uriSchema.validate('http://user:pass@mt0.google.com/vt/lyrs=m@114???&hl=en&src=api&x=2&y=2&z=3&s=');
             }
         }).add({
             name: 'validate-schema#isoDate',
             fn: function () {
-                isoDateSchema.validate(testString);
+                isoDateSchema.validate(testNumString);
             }
         }).add({
             name: 'validate-schema#guid',
             fn: function () {
-                guidSchema.validate(testString);
+                guidSchema.validate('D1A5279D-B27D-4CD4-A05E-EFDD53D08E8D');
+            }
+        }).add({
+            name: 'validate-schema#guid-wrapped',
+            fn: function () {
+                guidSchema.validate('{D1A5279D-B27D-4CD4-A05E-EFDD53D08E8D}');
             }
         }).add({
             name: 'validate-schema#hex',
             fn: function () {
-                hexSchema.validate(testString);
+                hexSchema.validate(testNumString);
             }
         }).add({
             name: 'validate-schema#base64',
             fn: function () {
-                base64Schema.validate(testString);
+                base64Schema.validate('YW55IGNhcm5hbCBwbGVhc3VyZS4=');
             }
         }).add({
             name: 'validate-schema#hostname',
             fn: function () {
-                hostnameSchema.validate(testString);
+                hostnameSchema.validate('www.example.com');
             }
         }).add({
             name: 'validate-schema#lowercase',
             fn: function () {
-                lowercaseSchema.validate(testString);
+                lowercaseSchema.validate(testLowercaseAlphaString);
             }
         }).add({
             name: 'validate-schema#uppercase',
             fn: function () {
-                uppercaseSchema.validate(testString);
+                uppercaseSchema.validate(testUppercaseAlphaString);
             }
         }).add({
             name: 'validate-schema#trim',
             fn: function () {
-                trimSchema.validate(testString);
+                trimSchema.validate(' ' + testString + ' ');
             }
         }).add({
             name: 'validate-schema#replace',
             fn: function () {
-                stringSchema.replace(/./, 'hi');
+                replaceSchema.validate(testNumString + '\t');
             }
         }).add({
             name: 'validate-schema#truncate',
